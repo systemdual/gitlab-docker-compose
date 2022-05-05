@@ -28,7 +28,7 @@ docker-compose ps
 
 Cuando esté todo healthy, ya podemos acceder.
 
-Para obtener la pass del usuario root:
+El usuario por defecto es root, y su password se puede obtener así:
 ```
 sudo docker exec -it gitlab grep 'Password:' /etc/gitlab/initial_root_password
 ```
