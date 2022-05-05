@@ -1,0 +1,47 @@
+version: '3.6'
+services:
+  gitlab-postgresql:
+    image: postgres:12
+    environment:
+      - POSTGRES_USER=gitlab
+      - POSTGRES_PASSWORD=xxxxxx
+      - POSTGRES_DB=gitlabhq_production
+    volumes:
+      - gitlab_postgresql_db:/var/lib/postgresql
+      - gitlab_postgresql_data:/var/lib/postgresql/data
+    restart: always
+  gitlab:
+    image: gitlab/gitlab-ce:14.8.4-ce.0
+    hostname: gitlab.sysdual.com
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://gitlab.sysdual.com'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2224
+        postgresql['enable'] = false
+        gitlab_rails['db_username'] = "gitlab"
+        gitlab_rails['db_password'] = "xxxxxxxx"
+        gitlab_rails['db_host'] = "gitlab-postgresql"
+    volumes:
+      - gitlab_data:/etc/gitlab
+      - gitlab_logs:/var/log/gitlab
+      - gitlab_opt:/var/opt/gitlab
+    ports:
+      - "80:80"
+      - "2224:51"
+      - "443:443"
+    shm_size: '256m'
+    restart: always
+    depends_on:
+      - gitlab-postgresql
+
+volumes:
+  gitlab_data:
+    name: gitlab_data
+  gitlab_logs:
+    name: gitlab_logs
+  gitlab_opt:
+    name: gitlab_opt
+  gitlab_postgresql_db:
+    name: gitlab_postgresql_db
+  gitlab_postgresql_data:
+    name: gitlab_postgresql_data
